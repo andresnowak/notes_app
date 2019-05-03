@@ -43,6 +43,9 @@ class notes_app (QtWidgets.QMainWindow, Ui_Form):
         saved_note = open(f"notes/{self.name_of_note}.txt", "w+")
         saved_note.write(note_contents)
         saved_note.close()
+        self.save.hide()
+        self.save_as.hide()
+        self.save_as_text.hide()
     
     def SaveAs(self, event):
         name_of_note = ""

@@ -40,7 +40,7 @@ class notes_app (QtWidgets.QMainWindow, Ui_Form):
 
     def Save(self):
         note_contents = self.plainTextEdit.toPlainText() #or maybe text edit to get the text
-        saved_note = open(f"notes/{self.name_of_note}.txt", "w+")
+        saved_note = open("notes/{}.txt".format(self.name_of_note), "w+")
         saved_note.write(note_contents)
         saved_note.close()
         self.save.hide()
@@ -52,7 +52,7 @@ class notes_app (QtWidgets.QMainWindow, Ui_Form):
         note_contents = self.plainTextEdit.toPlainText()
         if event.key() == QtCore.Qt.Key_Return and self.save_as_text.isVisible(): 
             self.name_of_note = self.save_as_text.text()
-            saved_note = open(f"notes/{self.name_of_note}.txt", "w+")
+            saved_note = open("notes/{}.txt".format(self.name_of_note), "w+")
             saved_note.write(note_contents)
             saved_note.close()
             self.save.hide()

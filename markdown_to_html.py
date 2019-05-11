@@ -22,12 +22,16 @@ class MarkdownToHtml():
         text = []
         index = 0
         for character in self.contents:
-            if character == "*":
+            if character == "#":
                 index = self.contents.index(character)
                 self.contents = self.contents[index:]
                 self.header_counter(self.contents)
-            else:
+            elif character == "\n":
+                self.text_note.append("<br>")
+            elif character == "*":
                 pass
+            else:
+                self.text_note.append(character)
 
         saved_note = open("notes/hello.html", "w+")
         self.text_note = "".join(self.text_note)
@@ -39,7 +43,7 @@ class MarkdownToHtml():
         header_number = 0
         index = 0
         for character in self.contents:
-            if character == "*":
+            if character == "#":
                 header_number += 1
             else:
                 index = self.contents.index(character)
@@ -50,29 +54,26 @@ class MarkdownToHtml():
         header_text = []
         index = 0
         for letter in self.contents:
-            if letter == "*":
+            if letter == "\n":
                 header_text = "".join(map(str, header_text))
                 result = "<h{}>{}</h{}>".format(header_number, header_text, header_number)
-                index = self.contents.index(letter)
-                self.contents = self.contents[index:]
-
-                self.header_counter_finish(result)
-                #print (result)
-            else:
-                header_text.append(letter)
-
-    def header_counter_finish(self, text_header):
-        index = 0
-        for letter in self.contents[index:]:
-            if letter != "*":
-                self.text_note.append(text_header)
+                self.text_note.append(result)
                 index = self.contents.index(letter)
                 self.contents = self.contents[index:]
                 self.note_reader()
 
+                #print (result)
+            else:
+                header_text.append(letter)
+
+        header_text = "".join(map(str, header_text))
+        result = "<h{}>{}</h{}>".format(header_number, header_text, header_number)
         self.contents = ""
-        self.text_note.append(text_header)
-        self.note_reader()   
+        self.text_note.append(result)
+        self.note_reader()
+
+        def bold(self):
+            pass 
 
     def paragraph(self, text):
         return "<p>{text}</p>".format(text=text)

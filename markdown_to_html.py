@@ -27,11 +27,13 @@ class MarkdownToHtml():
                 self.contents = self.contents[index:]
                 self.header_counter(self.contents)
             else:
-                saved_note = open("notes/hello.html", "w+")
-                self.text_note = "".join(self.text_note)
-                saved_note.write(self.text_note)
-                saved_note.close()
-                exit()
+                pass
+
+        saved_note = open("notes/hello.html", "w+")
+        self.text_note = "".join(self.text_note)
+        saved_note.write(self.text_note)
+        saved_note.close()
+        exit()
 
     def header_counter(self, text):
         header_number = 0
@@ -53,15 +55,24 @@ class MarkdownToHtml():
                 result = "<h{}>{}</h{}>".format(header_number, header_text, header_number)
                 index = self.contents.index(letter)
                 self.contents = self.contents[index:]
-                for letter in self.contents[index:]:
-                    if letter != "*":
-                        self.text_note.append(result)
-                        index = self.contents.index(letter)
-                        self.contents = self.contents[index:]
-                        self.note_reader()
+                #FIXME: change the way the function header works or header counter when it finishes reading its syntax so it can account for special possibilities like when the text finishes with *
+                self.header_counter_finish(result)
                 #print (result)
             else:
                 header_text.append(letter)
+
+    def header_counter_finish(self, text_header):
+        index = 0
+        for letter in self.contents[index:]:
+            if letter != "*":
+                self.text_note.append(text_header)
+                index = self.contents.index(letter)
+                self.contents = self.contents[index:]
+                self.note_reader()
+
+        self.contents = ""
+        self.text_note.append(text_header)
+        self.note_reader()   
 
     def paragraph(self, text):
         return "<p>{text}</p>".format(text=text)

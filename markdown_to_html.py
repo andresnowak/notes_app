@@ -25,11 +25,13 @@ class MarkdownToHtml():
             if character == "#":
                 index = self.contents.index(character)
                 self.contents = self.contents[index:]
-                self.header_counter(self.contents)
+                self.header_counter()
             elif character == "\n":
                 self.text_note.append("<br>")
             elif character == "*":
-                pass
+                index = self.contents.index(character)
+                self.contents = self.contents[index:]
+                self.bold_checker()
             else:
                 self.text_note.append(character)
 
@@ -39,7 +41,7 @@ class MarkdownToHtml():
         saved_note.close()
         exit()
 
-    def header_counter(self, text):
+    def header_counter(self):
         header_number = 0
         index = 0
         for character in self.contents:
@@ -72,8 +74,47 @@ class MarkdownToHtml():
         self.text_note.append(result)
         self.note_reader()
 
-        def bold(self):
-            pass 
+    def bold_checker(self):
+        counter = 0
+        index = 0
+        for letter in self.contents:
+            if letter == "*":
+                counter += 1
+            else:
+                index = self.contents.index(letter)
+                if counter == 2:
+                    self.contents = self.contents[index:]
+                    self.bold()
+                else:
+                    result = self.contents[index - counter:index]
+                    self.text_note.append(result)
+                    self.contents = self.contents[index:]
+    
+    def bold(self):
+        #TODO: change how header and bold work
+        bold_text = []
+        index = 0
+        counter = 0
+        for letter in self.contents:
+            if letter == "*":
+                counter += 1
+            elif counter == 2:
+                bold_text = "".join(map(str, bold_text))
+                result = "<strong>{}</strong>".format(bold_text)
+                self.text_note.append(result)
+                index = self.contents.index(letter)
+                self.contents = self.contents[index:]
+                self.note_reader()
+            else:
+                bold_text.append(letter)
+        
+        #TODO: add an if here so it checks if the counter is 2 so it doesnt apply the bold if its not equal to 2
+        bold_text = "".join(map(str, bold_text))
+        result = "<strong>{}</strong>".format(bold_text)
+        self.contents = ""
+        self.text_note.append(result)
+        self.note_reader()
+
 
     def paragraph(self, text):
         return "<p>{text}</p>".format(text=text)

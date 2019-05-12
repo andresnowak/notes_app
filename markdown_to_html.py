@@ -31,7 +31,7 @@ class MarkdownToHtml():
             elif character == "*":
                 index = self.contents.index(character)
                 self.contents = self.contents[index:]
-                self.bold_checker()
+                self.bold_italic_checker()
             else:
                 self.text_note.append(character)
 
@@ -74,7 +74,7 @@ class MarkdownToHtml():
         self.text_note.append(result)
         self.note_reader()
 
-    def bold_checker(self):
+    def bold_italic_checker(self):
         counter = 0
         index = 0
         for letter in self.contents:
@@ -85,6 +85,9 @@ class MarkdownToHtml():
                 if counter == 2:
                     self.contents = self.contents[index:]
                     self.bold()
+                elif counter == 1:
+                    self.contents = self.contents[index:]
+                    self.italic()
                 else:
                     result = self.contents[index - counter:index]
                     self.text_note.append(result)
@@ -105,6 +108,9 @@ class MarkdownToHtml():
                 index = self.contents.index(letter)
                 self.contents = self.contents[index:]
                 self.note_reader()
+            elif counter > 2:
+                pass
+                #TODO: add a checker so it doesnt apply the bold if its not equal to two
             else:
                 bold_text.append(letter)
         
@@ -115,6 +121,32 @@ class MarkdownToHtml():
         self.text_note.append(result)
         self.note_reader()
 
+    def italic(self):
+        italic_text = []
+        index = 0
+        counter = 0
+        for letter in self.contents:
+            if letter == "*":
+                counter += 1
+            elif counter == 1:
+                italic_text = "".join(map(str, italic_text))
+                result = "<em>{}</em>".format(italic_text)
+                self.text_note.append(result)
+                index = self.contents.index(letter)
+                self.contents = self.contents[index:]
+                self.note_reader()
+            elif counter > 1:
+                #TODO: add a checker so it doesnt apply the bold if its not equal to two
+                pass
+            else:
+                italic_text.append(letter)
+
+        #TODO: add an if here so it checks if the counter is 2 so it doesnt apply the italic if its not equal to 2
+        italic_text = "".join(map(str, italic_text))
+        result = "<em>{}</em>".format(italic_text)
+        self.contents = ""
+        self.text_note.append(result)
+        self.note_reader()
 
     def paragraph(self, text):
         return "<p>{text}</p>".format(text=text)

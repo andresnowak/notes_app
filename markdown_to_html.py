@@ -39,7 +39,7 @@ class MarkdownToHtml():
                     self.header_checker()
 
                 self.text_note.append("<br>")
-            elif character == "*":
+            elif character == "*" or character == "_":
                 index = self.contents.index(character)
                 self.contents = self.contents[index:]
                 self.bold_italic_checker()
@@ -89,7 +89,7 @@ class MarkdownToHtml():
                     self.contents = self.contents[2:]
                     self.bold = True
                     self.note_reader()       
-            elif character == "*":
+            elif character == "*" or character == "_":
                 counter += 1
             elif counter == 1:
                 if self.italic == True:

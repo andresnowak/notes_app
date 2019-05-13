@@ -15,14 +15,18 @@ class MarkdownToHtml():
         #print(self.contents)
         #self.header_number = 0
         self.text_note = []
+
         self.header = False
+        self.italic = False
+        self.bold = False
+
         self.header_number = 0
 
         self.note_reader()
 
     def note_reader(self):
-        text = []
         index = 0
+
         for character in self.contents:
             if character == "#":
                 index = self.contents.index(character)
@@ -66,14 +70,60 @@ class MarkdownToHtml():
                     index = self.contents.index(character)
                     self.contents = self.contents[index:]
                     self.header = True
-                    break
+                    self.note_reader()
 
     def bold_italic_checker(self):
-        pass
+        counter = 0
 
-    def finish_checker(self):
+        for character in self.contents:
+            if counter == 2:
+                if self.bold == True:
+                    self.text_note.append("</strong>")
+                    index = self.contents.index(character)
+                    self.contents = self.contents[2:]
+                    self.bold = False
+                    self.note_reader()
+                else:
+                    self.text_note.append("<strong>")
+                    index = self.contents.index(character)
+                    self.contents = self.contents[2:]
+                    self.bold = True
+                    self.note_reader()       
+            elif character == "*":
+                counter += 1
+            elif counter == 1:
+                if self.italic == True:
+                    self.text_note.append("</em>")
+                    index = self.contents.index(character)
+                    self.contents = self.contents[index:]
+                    self.italic = False
+                    self.note_reader()
+                else:
+                    self.text_note.append("<em>")
+                    index = self.contents.index(character)
+                    self.contents = self.contents[index:]
+                    self.italic = True
+                    self.note_reader()
+
+        self.finish_checker(counter)
+
+    def finish_checker(self, counter = 0):
         if self.header == True:
             self.header_checker()
+
+        if self.bold == True:
+            if counter == 2:
+                self.text_note.append("</strong>")
+                self.contents = ""
+                self.bold == False
+                self.note_reader()
+
+        if self.italic == True:
+            if counter == 1:
+                self.text_note.append("</em>")
+                self.contents = ""
+                self.italic == False
+                self.note_reader()
 
 if __name__ == "__main__":
     note = open("notes/hello.txt")

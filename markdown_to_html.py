@@ -42,6 +42,8 @@ class MarkdownToHtml():
             else:
                 self.text_note.append(character)
 
+        self.finish_checker()
+
         saved_note = open("notes/hello.html", "w+")
         self.text_note = "".join(self.text_note)
         saved_note.write(self.text_note)
@@ -52,7 +54,7 @@ class MarkdownToHtml():
         index = 0
 
         if self.header == True:
-            self.text_note.append("</h{}".format(self.header_number))
+            self.text_note.append("</h{}>".format(self.header_number))
             self.header_number = 0
             self.header = False
         else:
@@ -60,16 +62,18 @@ class MarkdownToHtml():
                 if character == "#":
                     self.header_number += 1
                 else:
-                    self.text_note.append("<h{}".format(self.header_number))
+                    self.text_note.append("<h{}>".format(self.header_number))
                     index = self.contents.index(character)
                     self.contents = self.contents[index:]
                     self.header = True
                     break
-        
-        #TODO: add a header creator here for the special case when the text finishes here
 
     def bold_italic_checker(self):
         pass
+
+    def finish_checker(self):
+        if self.header == True:
+            self.header_checker()
 
 if __name__ == "__main__":
     note = open("notes/hello.txt")

@@ -19,8 +19,12 @@ class MarkdownToHtml():
         self.header = False
         self.italic = False
         self.bold = False
+        self.ordered_list_ol = False
+        self.ordered_list_li = False
 
         self.header_number = 0
+        self.list_numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        self.counter_note_reader = 0
 
         self.note_reader()
 
@@ -30,21 +34,47 @@ class MarkdownToHtml():
         for character in self.contents:
             if character == "#":
                 index = self.contents.index(character)
+
                 self.contents = self.contents[index:]
                 self.header_checker()
             elif character == "\n":
                 if self.header == True:
                     index = self.contents.index(character)
+
                     self.contents = self.contents[index:]
                     self.header_checker()
 
+                self.counter_note_reader = 0
+                #TODO:change how this work so it doesnt have to be done inside here
+                if self.counter_note_reader == 0 and self.ordered_list_li == True:
+                    self.text_note.append("</li>")
+                    self.ordered_list_li = False
+
+                index = self.contents.index(character)
+                self.contents = self.contents[index + 1:]
                 self.text_note.append("<br>")
+
+                self.note_reader()
             elif character == "*" or character == "_":
                 index = self.contents.index(character)
+
                 self.contents = self.contents[index:]
                 self.bold_italic_checker()
+            elif character in self.list_numbers and self.counter_note_reader == 0:
+                index = self.contents.index(character)
+
+                self.contents = self.contents[index:]
+                self.ordered_list_checker()
+            elif character not in self.list_numbers and self.counter_note_reader == 0:
+                index = self.contents.index(character)
+
+                self.contents = self.contents[index:]
+                self.ordered_list_checker_finish()
+                self.text_note.append(character)
             else:
                 self.text_note.append(character)
+
+            self.counter_note_reader += 1
 
         self.finish_checker()
 
@@ -99,13 +129,42 @@ class MarkdownToHtml():
                     self.italic = False
                     self.note_reader()
                 else:
-                    self.text_note.append("<em>")
+                    self.text_note.append("<ol>")
                     index = self.contents.index(character)
                     self.contents = self.contents[index:]
                     self.italic = True
                     self.note_reader()
 
         self.finish_checker(counter)
+
+    def ordered_list_checker(self):
+        #TODO: add a checker to see if it has a dot next to the number
+        #FIXME: fix a bug were there is being added a <br> inside of a list <li>
+        if self.ordered_list_ol == False:
+            self.text_note.append("<ol>")
+
+            self.ordered_list_ol = True
+
+        if self.ordered_list_li == True:
+            self.text_note.append("</li>")
+
+            self.ordered_list_li = False
+            self.note_reader()
+        else:
+            self.text_note.append("<li>")
+
+            self.contents = self.contents[2:]
+            self.ordered_list_li = True
+
+            self.counter_note_reader += 2
+
+            self.note_reader()
+
+    def ordered_list_checker_finish(self):
+        if self.ordered_list_ol == True:
+            self.text_note.append("</ol>")
+
+            self.ordered_list_ol = False
 
     def finish_checker(self, counter = 0):
         if self.header == True:
@@ -124,6 +183,14 @@ class MarkdownToHtml():
                 self.contents = ""
                 self.italic == False
                 self.note_reader()
+
+        if self.ordered_list_li == True:
+            self.text_note.append("</li>")
+
+            self.ordered_list_li = False
+
+        if self.ordered_list_ol == True:
+            self.ordered_list_checker_finish()
 
 if __name__ == "__main__":
     note = open("notes/hello.txt")

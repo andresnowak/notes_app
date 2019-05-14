@@ -51,7 +51,6 @@ class MarkdownToHtml():
         exit()
 
     def note_reader_checker(self, character):
-        #FIXME: fix a bug where an <ol> is being added. Because of <strong> and <br> maybe?
         if character == "#":
                 self.header_checker()
         elif character == "\n":
@@ -111,7 +110,7 @@ class MarkdownToHtml():
                     self.italic = False
                     self.note_reader()
                 else:
-                    self.text_note.append("<ol>")
+                    self.text_note.append("<em>")
                     index = self.contents.index(character)
                     self.contents = self.contents[index:]
                     self.italic = True

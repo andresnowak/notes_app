@@ -53,17 +53,26 @@ class MarkdownToHtml():
     def note_reader_checker(self, character):
         if character == "#":
                 self.header_checker()
-        elif character == "\n":
+
+        if character == "\n":
+            #TODO: change this if so it doesnt add the /n newline apart from the <br>
             if self.header == True:
                 self.header_checker()
 
             self.text_note.append("<br>")
-        elif character == "*" or character == "_":
-            index = self.contents.index(character)
-            self.contents = self.contents[index:]
+
+            self.counter_note_reader = 0
+
+        if character == "*" or character == "_":
             self.bold_italic_checker()
-        else:
-            self.text_note.append(character)
+
+        if character in self.list_numbers and self.counter_note_reader == 1:
+            self.ordered_list_checker()
+
+        if character not in self.list_numbers and self.counter_note_reader == 1:
+            self.ordered_list_checker_finish()
+        
+        self.text_note.append(character)
 
     def header_checker(self):
         index = 0
@@ -84,6 +93,7 @@ class MarkdownToHtml():
                     self.note_reader()
 
     def bold_italic_checker(self):
+        #FIXME: fix the case where a strong or em is being added at start, because if we dont add one at the finish html will apply the bold or italic either way
         counter = 0
 
         for character in self.contents:

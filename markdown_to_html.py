@@ -32,57 +32,39 @@ class MarkdownToHtml():
         index = 0
 
         for character in self.contents:
-            if character == "#":
-                index = self.contents.index(character)
+            index = self.contents.index(character)
+            self.contents = self.contents[index:]
 
-                self.contents = self.contents[index:]
-                self.header_checker()
-            elif character == "\n":
-                if self.header == True:
-                    index = self.contents.index(character)
-
-                    self.contents = self.contents[index:]
-                    self.header_checker()
-
-                self.counter_note_reader = 0
-                #TODO:change how this work so it doesnt have to be done inside here
-                if self.counter_note_reader == 0 and self.ordered_list_li == True:
-                    self.text_note.append("</li>")
-                    self.ordered_list_li = False
-
-                index = self.contents.index(character)
-                self.contents = self.contents[index + 1:]
-                self.text_note.append("<br>")
-
-                self.note_reader()
-            elif character == "*" or character == "_":
-                index = self.contents.index(character)
-
-                self.contents = self.contents[index:]
-                self.bold_italic_checker()
-            elif character in self.list_numbers and self.counter_note_reader == 0:
-                index = self.contents.index(character)
-
-                self.contents = self.contents[index:]
-                self.ordered_list_checker()
-            elif character not in self.list_numbers and self.counter_note_reader == 0:
-                index = self.contents.index(character)
-
-                self.contents = self.contents[index:]
-                self.ordered_list_checker_finish()
-                self.text_note.append(character)
-            else:
-                self.text_note.append(character)
+            self.note_reader_checker(character)
 
             self.counter_note_reader += 1
 
         self.finish_checker()
 
+        self.save_note()
+
+    def save_note(self):
         saved_note = open("notes/hello.html", "w+")
         self.text_note = "".join(self.text_note)
         saved_note.write(self.text_note)
         saved_note.close()
         exit()
+
+    def note_reader_checker(self, character):
+        #FIXME: fix a bug where an <ol> is being added. Because of <strong> and <br> maybe?
+        if character == "#":
+                self.header_checker()
+        elif character == "\n":
+            if self.header == True:
+                self.header_checker()
+
+            self.text_note.append("<br>")
+        elif character == "*" or character == "_":
+            index = self.contents.index(character)
+            self.contents = self.contents[index:]
+            self.bold_italic_checker()
+        else:
+            self.text_note.append(character)
 
     def header_checker(self):
         index = 0

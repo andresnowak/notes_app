@@ -6,7 +6,9 @@ import os, re, sys
 class MarkdownToHtml():
     def __init__(self, note):
         #note = open("notes/{note}")
-        note = note.read() 
+        self.note_name = note
+        note = open(("notes/{}").format(note))
+        note = note.read()
         # NOTE:you can iterate over characters in contents of a read file and  i think strings to
         self.contents = []
         for character in note:
@@ -21,6 +23,7 @@ class MarkdownToHtml():
         self.bold = False
         self.ordered_list_ol = False
         self.ordered_list_li = False
+        self.unordered_list_ul = False
 
         self.header_number = 0
         self.list_numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
@@ -44,7 +47,8 @@ class MarkdownToHtml():
         self.save_note()
 
     def save_note(self):
-        saved_note = open("notes/hello.html", "w+")
+        self.note_name = self.note_name.replace(".txt", "")
+        saved_note = open(("notes/{}.html").format(self.note_name), "w+")
         self.text_note = "".join(self.text_note)
         saved_note.write(self.text_note)
         saved_note.close()
@@ -71,6 +75,12 @@ class MarkdownToHtml():
 
         if character not in self.list_numbers and self.counter_note_reader == 1:
             self.ordered_list_checker_finish()
+
+        if character == "-" and self.counter_note_reader == 1 or character == "+" and self.counter_note_reader == 1:
+            self.unordered_list_checker()
+
+        if self.counter_note_reader == 1:
+            self.unordered_list_checker_finish()
         
         self.text_note.append(character)
 
@@ -151,11 +161,40 @@ class MarkdownToHtml():
 
             self.note_reader()
 
+    def unordered_list_checker(self):
+        #TODO: add a checker to see if it has a space next to the syntax for unordered list
+        #FIXME: fix a bug were there is being added a <br> inside of a list <li>
+        if self.unordered_list_ul == False:
+            self.text_note.append("<ul>")
+
+            self.unordered_list_ul = True
+
+        if self.ordered_list_li == True:
+            self.text_note.append("</li>")
+
+            self.ordered_list_li = False
+            self.note_reader()
+        else:
+            self.text_note.append("<li>")
+
+            self.contents = self.contents[2:]
+            self.ordered_list_li = True
+
+            self.counter_note_reader += 2
+
+            self.note_reader()
+
     def ordered_list_checker_finish(self):
         if self.ordered_list_ol == True:
             self.text_note.append("</ol>")
 
             self.ordered_list_ol = False
+
+    def unordered_list_checker_finish(self):
+        if self.unordered_list_ul == True:
+            self.text_note.append("</ul>")
+
+            self.unordered_list_ul = False
 
     def finish_checker(self, counter = 0):
         if self.header == True:
@@ -183,6 +222,9 @@ class MarkdownToHtml():
         if self.ordered_list_ol == True:
             self.ordered_list_checker_finish()
 
+        if self.unordered_list_ul == True:
+            self.unordered_list_checker_finish()
+
 if __name__ == "__main__":
-    note = open("notes/hello.txt")
+    note = "hello.txt"
     MarkdownToHtml(note)

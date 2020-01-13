@@ -26,15 +26,12 @@ class MarkdownToHtml():
     def note_reader(self, note):
         note = note.split("\n")
         new_note = []
-        new_string = None
+        #new_string = None
 
         for line in note:
-            new_string = self.header_checker(line)
+            line = self.header_checker(line) if self.header_checker(line) != None else line
 
-            if new_string != None:
-                new_note.append(new_string)
-            else:
-                new_note.append(line)
+            new_note.append(line)
         
         return "\n".join(new_note)
 

@@ -55,5 +55,5 @@ class MarkdownToHtml():
         return string
 
 if __name__ == "__main__":
-    note = "hello2.md"
+    note = input("Write the name of the file you want to convert: ")
     MarkdownToHtml(note)

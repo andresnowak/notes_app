@@ -62,7 +62,7 @@ class MarkdownToHtml():
         for index in range(len(syntax_counter)):
             if syntax_found:
                 syntax_location = re.search(syntax[1], string).span()
-                string = f"{string[0:syntax_location[0]]}</{html_format}>{string[syntax_location[1]::]}"
+                string = f"{string[0:syntax_location[0]+1]}</{html_format}>{string[syntax_location[1]::]}"
 
                 syntax_found = False
             else:
@@ -75,6 +75,6 @@ class MarkdownToHtml():
         return string
 
 if __name__ == "__main__":
-    #note = input("Write the name of the file you want to convert: ")
-    note = "hello3.md"
+    note = input("Write the name of the file you want to convert: ")
+    #note = "hello3.md"
     MarkdownToHtml(note)

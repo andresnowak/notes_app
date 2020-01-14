@@ -12,7 +12,7 @@ class MarkdownToHtml():
 
         new_note = self.note_reader(note)
 
-        self.bold_syntax = [r"(\*{2}|_{2})", r"\S(\*{2}|_{2})", r"(\*{2}|_{2})\S"]
+        #self.bold_syntax = [r"(\*{2}|_{2})", r"\S(\*{2}|_{2})", r"(\*{2}|_{2})\S"]
 
         self.save_note(new_note)
 
@@ -28,8 +28,8 @@ class MarkdownToHtml():
         note = note.split("\n")
         new_note = []
 
-        bold_syntax = [r"(\*{2}|_{2})", r"\S(\*{2}|_{2})", r"(\*{2}|_{2})\S"]
-        italic_syntax = [r"(\*|_)", r"\S(\*|_)", r"(\*|_)\S"]
+        bold_syntax = [r"(\*{2}|_{2})", r"\S(\*{2}|_{2})( |$)", r"( |^)(\*{2}|_{2})\S"]
+        italic_syntax = [r"(\*|_)", r"\S(\*|_)( |$)", r"( |^)(\*|_)\S"]
 
         for line in note:
             line = self.header_checker(line) if self.header_checker(line) != None else line
@@ -61,12 +61,13 @@ class MarkdownToHtml():
 
         for index in range(len(syntax_counter)):
             if syntax_found:
-                syntax_location = re.search(syntax[1], string).span()
-                string = f"{string[0:syntax_location[0]+1]}</{html_format}>{string[syntax_location[1]::]}"
+                if re.search(syntax[1], string) != None:
+                    syntax_location = re.search(syntax[1], string).span()
+                    string = f"{string[0:syntax_location[0]+1]}</{html_format}>{string[syntax_location[1]::]}"
 
-                syntax_found = False
+                    syntax_found = False
             else:
-                if index != len(syntax_counter) - 1:
+                if index != len(syntax_counter) - 1 and re.search(syntax[2], string) != None:
                     syntax_location = re.search(syntax[2], string).span()
                     string = f"{string[0:syntax_location[0]]}<{html_format}>{string[syntax_location[1]-1::]}"
 
@@ -76,5 +77,5 @@ class MarkdownToHtml():
 
 if __name__ == "__main__":
     note = input("Write the name of the file you want to convert: ")
-    #note = "hello3.md"
+    #note = "hello4.md"
     MarkdownToHtml(note)
